@@ -54,16 +54,23 @@ public class OrderRepository {
     }
 
     public int getOrderCountByPartnerId(String partnerId){
-        return partnerHashMap.get(partnerId).getNumberOfOrders();
+
+        if(partnerHashMap.containsKey(partnerId)){
+         return partnerHashMap.get(partnerId).getNumberOfOrders();
+        }
+
+        return 0;
     }
 
     public List<String> getOrdersByPartnerId(String partnerId){
         List<String> result=new ArrayList<>();
 
-        List<Order> orders=orderPartnerPairHashMap.get(partnerId);
+        if(orderPartnerPairHashMap.containsKey(partnerId)) {
+            List<Order> orders = orderPartnerPairHashMap.get(partnerId);
 
-        for(Order o:orders){
-            result.add(o.getId());
+            for (Order o : orders) {
+                result.add(o.getId());
+            }
         }
         return result;
     }
@@ -101,9 +108,11 @@ public class OrderRepository {
 
         int totalTime=(Integer.parseInt(hr)*60)+Integer.parseInt(min);
         int count=0;
-        for(Order o:orderPartnerPairHashMap.get(partnerId)){
-            if(o.getDeliveryTime()>totalTime){
-                count++;
+        if(orderPartnerPairHashMap.containsKey(partnerId)) {
+            for (Order o : orderPartnerPairHashMap.get(partnerId)) {
+                if (o.getDeliveryTime() > totalTime) {
+                    count++;
+                }
             }
         }
         return count;
@@ -111,9 +120,11 @@ public class OrderRepository {
 
     public String getLastDeliveryTimeByPartnerId(String partnerId){
         int maxTime=Integer.MIN_VALUE;
-        for(Order o:orderPartnerPairHashMap.get(partnerId)){
-            if(o.getDeliveryTime()>maxTime)
-                maxTime=o.getDeliveryTime();
+        if(orderPartnerPairHashMap.containsKey(partnerId)) {
+            for (Order o : orderPartnerPairHashMap.get(partnerId)) {
+                if (o.getDeliveryTime() > maxTime)
+                    maxTime = o.getDeliveryTime();
+            }
         }
         int hr=maxTime/60;
         int min=maxTime%60;
@@ -125,10 +136,12 @@ public class OrderRepository {
     }
 
     public void deletePartnerById(String partnerId){
-        for(Order o:orderPartnerPairHashMap.get(partnerId)){
-            unassignedOrder.put(o.getId(),o);
+        if(orderPartnerPairHashMap.containsKey(partnerId)) {
+            for (Order o : orderPartnerPairHashMap.get(partnerId)) {
+                unassignedOrder.put(o.getId(), o);
+            }
+            orderPartnerPairHashMap.remove(partnerId);
         }
-        orderPartnerPairHashMap.remove(partnerId);
         partnerHashMap.remove(partnerId);
     }
 
@@ -146,11 +159,15 @@ public class OrderRepository {
                 Order o=iterator.next();
                 if(o.getId().equals(orderId)){
                     iterator.remove();
+                    partnerHashMap.get(s).setNumberOfOrders(orderPartnerPairHashMap.get(s).size());
                 }
             }
 
+
+
         }
         orderHashMap.remove(orderId);
+        unassignedOrder.remove(orderId);
     }
 
 
