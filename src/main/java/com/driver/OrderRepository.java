@@ -128,7 +128,13 @@ public class OrderRepository {
         }
         int hr=maxTime/60;
         int min=maxTime%60;
-        String str=hr+":"+min;
+        String h=String.valueOf(hr);
+        if(h.length()==1)
+            h="0"+h;
+        String m=String.valueOf(min);
+        if(m.length()==1)
+            m="0"+m;
+        String str=h+":"+m;
         //System.out.println(str);
 
         return str;
